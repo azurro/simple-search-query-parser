@@ -97,11 +97,13 @@ class SearchQueryParser {
                 }
             } else {
                 if(is_null($quote)) {
-                    if (strpos($token,'*') !== false) {
-                        array_push($this->rpn_tree, array('type'=>'WORD', 'value'=>$token));
-                    } else {
-                        array_push($this->rpn_tree, array('type'=>'WORD', 'value'=>'"'.$token.'"'));
+                    $token_val = '"'.$token.'"';
+                    if (substr($token, 0, strlen('inurl:')) === 'inurl:') {
+                        $token_val = 'inurl:' . str_replace(array('\\', ':'), array('\\\\','\:'), substr($token, strlen('inurl:')));
+                    } elseif (strpos($token,'*') !== false) {
+                        $token_val = str_replace(array('\\', ':'), array('\\\\','\:'), $token);
                     }
+                    array_push($this->rpn_tree, array('type'=>'WORD', 'value'=>$token_val));
                 } else {
                     $quote .= $token . ' ';
                 }
